@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Code Craft",
-  description: "Share and run code snippets",
+  title: "Code Deck IDE | Online Code Editor & Compiler",
+  description:
+    "Code Deck IDE is a fast, browser-based online code editor and compiler that lets you write, run, and test code in multiple programming languages. Build, debug, and share your projects instantly without any setup.",
 };
 
 export default function RootLayout({

@@ -30,8 +30,6 @@ const LanguageSelector = ({ hasAccess }: { hasAccess: boolean }) => {
    }, []);
   
   const handleLanguageSelect = (langId: string) => {
-    if (!hasAccess && langId !== "javascript") return;
-
     setLanguage(langId);
     setIsOpen(false);
   };
@@ -43,10 +41,9 @@ const LanguageSelector = ({ hasAccess }: { hasAccess: boolean }) => {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-40 group relative flex items-center gap-2 px-4 h-10 bg-[#1e1e2e]/80 
+        className="w-40 group relative flex items-center gap-2 px-4 h-10 bg-[#1e1e2e]/80 
       rounded-lg transition-all 
-       duration-200 border border-gray-800/50 hover:border-gray-700
-       ${!hasAccess && language !== "javascript" ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+       duration-200 border border-gray-800/50 hover:border-gray-700 cursor-pointer"
       >
         {/* Decoration */}
         <div
@@ -93,7 +90,7 @@ const LanguageSelector = ({ hasAccess }: { hasAccess: boolean }) => {
 
             <div className="max-h-70 overflow-y-auto overflow-x-hidden no-scrollbar">
               {Object.values(LANGUAGE_CONFIG).map((lang, index) => {
-                const isLocked = !hasAccess && lang.id !== "javascript";
+                const isLocked = false;
 
                 return (
                   <motion.div

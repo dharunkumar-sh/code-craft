@@ -17,8 +17,7 @@ export const saveExecution = mutation({
     // check pro status
     const user = await ctx.db
       .query("users")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), identity.subject))
+      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
       .first();
 
     // No Pro check needed; all languages are open.
@@ -38,8 +37,7 @@ export const getUserExecutions = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("codeExecutions")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
       .order("desc")
       .paginate(args.paginationOpts);
   },
@@ -50,15 +48,13 @@ export const getUserStats = query({
   handler: async (ctx, args) => {
     const executions = await ctx.db
       .query("codeExecutions")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
       .collect();
 
     // Get starred snippets
     const starredSnippets = await ctx.db
       .query("stars")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
       .collect();
 
     // Get all starred snippet details to analyze languages

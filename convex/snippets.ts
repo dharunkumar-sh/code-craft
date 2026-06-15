@@ -13,8 +13,7 @@ export const createSnippet = mutation({
 
     const user = await ctx.db
       .query("users")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), identity.subject))
+      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
       .first();
 
     if (!user) throw new Error("User not found");
@@ -49,8 +48,7 @@ export const deleteSnippet = mutation({
 
     const comments = await ctx.db
       .query("snippetComments")
-      .withIndex("by_snippet_id")
-      .filter((q) => q.eq(q.field("snippetId"), args.snippetId))
+      .withIndex("by_snippet_id", (q) => q.eq("snippetId", args.snippetId))
       .collect();
 
     for (const comment of comments) {
@@ -59,8 +57,7 @@ export const deleteSnippet = mutation({
 
     const stars = await ctx.db
       .query("stars")
-      .withIndex("by_snippet_id")
-      .filter((q) => q.eq(q.field("snippetId"), args.snippetId))
+      .withIndex("by_snippet_id", (q) => q.eq("snippetId", args.snippetId))
       .collect();
 
     for (const star of stars) {
@@ -81,11 +78,8 @@ export const starSnippet = mutation({
 
     const existing = await ctx.db
       .query("stars")
-      .withIndex("by_user_and_snippet")
-      .filter(
-        (q) =>
-          q.eq(q.field("userId"), identity.subject) &&
-          q.eq(q.field("snippetId"), args.snippetId),
+      .withIndex("by_user_and_snippet", (q) =>
+        q.eq("userId", identity.subject).eq("snippetId", args.snippetId),
       )
       .first();
 
@@ -111,8 +105,7 @@ export const addComment = mutation({
 
     const user = await ctx.db
       .query("users")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), identity.subject))
+      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
       .first();
 
     if (!user) throw new Error("User not found");
@@ -166,8 +159,7 @@ export const getComments = query({
   handler: async (ctx, args) => {
     const comments = await ctx.db
       .query("snippetComments")
-      .withIndex("by_snippet_id")
-      .filter((q) => q.eq(q.field("snippetId"), args.snippetId))
+      .withIndex("by_snippet_id", (q) => q.eq("snippetId", args.snippetId))
       .order("desc")
       .collect();
 
@@ -185,11 +177,8 @@ export const isSnippetStarred = query({
 
     const star = await ctx.db
       .query("stars")
-      .withIndex("by_user_and_snippet")
-      .filter(
-        (q) =>
-          q.eq(q.field("userId"), identity.subject) &&
-          q.eq(q.field("snippetId"), args.snippetId),
+      .withIndex("by_user_and_snippet", (q) =>
+        q.eq("userId", identity.subject).eq("snippetId", args.snippetId),
       )
       .first();
 
@@ -202,8 +191,7 @@ export const getSnippetStarCount = query({
   handler: async (ctx, args) => {
     const stars = await ctx.db
       .query("stars")
-      .withIndex("by_snippet_id")
-      .filter((q) => q.eq(q.field("snippetId"), args.snippetId))
+      .withIndex("by_snippet_id", (q) => q.eq("snippetId", args.snippetId))
       .collect();
 
     return stars.length;
@@ -217,8 +205,7 @@ export const getStarredSnippets = query({
 
     const stars = await ctx.db
       .query("stars")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), identity.subject))
+      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
       .collect();
 
     const snippets = await Promise.all(

@@ -1,6 +1,35 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+async function getOrCreateUser(ctx: any, identity: any) {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_user_id", (q: any) => q.eq("userId", identity.subject))
+    .first();
+
+  if (user) return user;
+
+  const email = identity.email ?? "";
+  let name = identity.name ?? "";
+  if (!name) {
+    name = `${identity.givenName ?? ""} ${identity.familyName ?? ""}`.trim();
+  }
+  if (!name) {
+    name = email.split("@")[0] || "Anonymous User";
+  }
+
+  const userId = identity.subject;
+  const newUserId = await ctx.db.insert("users", {
+    userId,
+    email,
+    name,
+  });
+
+  const newUser = await ctx.db.get(newUserId);
+  if (!newUser) throw new Error("Failed to auto-provision user in database");
+  return newUser;
+}
+
 export const createSnippet = mutation({
   args: {
     title: v.string(),
@@ -11,12 +40,7 @@ export const createSnippet = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
-      .first();
-
-    if (!user) throw new Error("User not found");
+    const user = await getOrCreateUser(ctx, identity);
 
     const snippetId = await ctx.db.insert("snippets", {
       userId: identity.subject,
@@ -103,12 +127,7 @@ export const addComment = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
-      .first();
-
-    if (!user) throw new Error("User not found");
+    const user = await getOrCreateUser(ctx, identity);
 
     return await ctx.db.insert("snippetComments", {
       snippetId: args.snippetId,

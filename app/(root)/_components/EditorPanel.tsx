@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { Editor } from "@monaco-editor/react";
 import ShareSnippetDialog from "./ShareSnippetDialog";
 import { EditorPanelSkeleton } from "./EditorPanelSkeleton";
+import { setupIntellisense } from "./IntellisenseConfig";
 
 const EditorPanel = () => {
   const clerk = useClerk();
@@ -121,7 +122,10 @@ const EditorPanel = () => {
             language={LANGUAGE_CONFIG[language].monacoLanguage}
             onChange={handleEditorChange}
             theme={theme}
-            beforeMount={defineMonacoThemes}
+            beforeMount={(monaco) => {
+              defineMonacoThemes(monaco);
+              setupIntellisense(monaco);
+            }}
             onMount={(editor) => setEditor(editor)}
             options={{
               minimap: { enabled: false },
@@ -143,6 +147,36 @@ const EditorPanel = () => {
                 verticalScrollbarSize: 8,
                 horizontalScrollbarSize: 8,
               },
+              // Professional IntelliSense and Editor features
+              quickSuggestions: {
+                other: true,
+                comments: true,
+                strings: true,
+              },
+              suggestOnTriggerCharacters: true,
+              acceptSuggestionOnEnter: "on",
+              acceptSuggestionOnCommitCharacter: true,
+              tabCompletion: "on",
+              wordBasedSuggestions: "allDocuments",
+              snippetSuggestions: "inline",
+              parameterHints: {
+                enabled: true,
+              },
+              autoClosingBrackets: "always",
+              autoClosingQuotes: "always",
+              autoClosingDelete: "always",
+              autoClosingOvertype: "always",
+              autoSurround: "languageDefined",
+              bracketPairColorization: {
+                enabled: true,
+              },
+              cursorSmoothCaretAnimation: "on",
+              formatOnPaste: true,
+              formatOnType: true,
+              folding: true,
+              foldingHighlight: true,
+              matchBrackets: "always",
+              showUnused: true,
             }}
           />
         )}

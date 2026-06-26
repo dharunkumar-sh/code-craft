@@ -4,6 +4,7 @@ import { dark } from "@clerk/themes";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import React from "react";
+import SyncUser from "./SyncUser";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 const ConvexClientProvider = ({ children }: { children: React.ReactNode }) => {
@@ -13,6 +14,7 @@ const ConvexClientProvider = ({ children }: { children: React.ReactNode }) => {
       appearance={{ baseTheme: dark }}
     >
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+        <SyncUser />
         {children}
       </ConvexProviderWithClerk>
     </ClerkProvider>

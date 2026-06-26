@@ -10,7 +10,7 @@ export const syncUser = mutation({
   handler: async (ctx, args) => {
     const existingUser = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
       .first();
 
     if (!existingUser) {
